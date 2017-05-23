@@ -1,0 +1,26 @@
+server:
+  port: 8083
+  session:
+    cookie:
+      name: JSESSIONID3
+    timeout: 360000
+
+megaclient:
+  client:
+    id: megaclient
+    clientId: megaclient
+    clientSecret: 123456
+    accessTokenUri: http://localhost:8081/oauth/token
+    userAuthorizationUri: http://localhost:8081/oauth/authorize
+#    tokenIntrospectionUri: http://localhost:8081/oauth/check_token
+    authenticationScheme: query
+    clientAuthenticationScheme: header
+    scope:
+      - FOO
+  resource:
+    userInfoUri: http://localhost:8081/api/user/principal.json
+    preferTokenInfo: true
+
+logging:
+  level:
+    org.springframework.security: DEBUG

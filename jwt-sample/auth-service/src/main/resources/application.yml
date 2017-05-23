@@ -1,0 +1,9 @@
+server:
+  port: 8081
+  session:
+    cookie:
+      name: JSESSIONID1
+
+logging:
+  level:
+    org.springframework.security: DEBUG

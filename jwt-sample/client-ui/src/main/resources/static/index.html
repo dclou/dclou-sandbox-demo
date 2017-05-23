@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>Demo</title>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width"/>
+    <base href="/"/>
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body ng-app="app" ng-controller="home as home">
+
+<div class="container" ng-show="!home.authenticated">
+    Username: <input ng-model="home.username">
+    Password: <input ng-model="home.password">
+    <br>
+    <span style="color: red;">{{ home.error }}</span>
+    <div>
+        <button ng-click="home.login()" class="btn btn-primary">LOGIN</button>
+        <a href="/login/megaclient2">LOGIN VIA AUTH SERVICE</a>
+    </div>
+</div>
+
+<div class="container" ng-show="home.authenticated">
+    Logged in as: <span ng-bind="home.user"></span>
+
+    <div>
+        <button ng-click="home.logout()" class="btn btn-primary">Logout</button>
+    </div>
+
+    <div>
+        <button ng-click="home.apiCall()" class="btn btn-primary">CALL API</button>
+    </div>
+    <div>
+        <button ng-click="home.apiCall2()" class="btn btn-primary">CALL API 2</button>
+    </div>
+
+    <br>
+
+    <span style="color: red;">{{ home.apiError }}</span>
+    <span style="color: blue;">{{ home.apiResult }}</span>
+</div>
+
+<script type="text/javascript" src="/webjars/angularjs/angular.min.js"></script>
+<script type="text/javascript">
+    angular.module("app", []).controller("home", function($http) {
+        var self = this;
+        self.username = 'reader';
+        self.password = 'password';
+        self.error = '';
+        self.apiResult = '';
+        self.apiError = '';
+
+        self.login = function() {
+            self.apiResult = '';
+            self.apiError = '';
+
+            $http.post('/login/megaclient', {}, {headers: {username: self.username, password: self.password}}).success(function() {
+                self.getUser();
+            }).error(function(data) {
+                console.log("Login failed");
+                self.authenticated = false;
+                self.error = data.message;
+            });
+        };
+
+        self.logout = function() {
+            self.apiResult = '';
+            self.apiError = '';
+
+            $http.post('/logout', {}).success(function() {
+                self.authenticated = false;
+                self.user = "N/A";
+                self.error = '';
+            }).error(function(data) {
+                console.log("Logout failed");
+            });
+        };
+
+        self.getUser = function() {
+            $http.get("/user").success(function(data) {
+                self.user = data.userAuthentication.details.name;
+                self.userData = data;
+                self.authenticated = true;
+
+                console.log(data);
+            }).error(function() {
+                self.user = "N/A";
+                self.authenticated = false;
+            });
+        };
+
+        self.apiCall = function() {
+            $http.post("/api/test", {}).success(function(data) {
+                console.log(data);
+
+                self.apiResult = data;
+                self.apiError = '';
+            }).error(function() {
+                console.log('error!!!');
+            });
+        };
+
+        self.apiCall2 = function() {
+            $http.post("/api/test2", {}).success(function(data) {
+                console.log(data);
+
+                self.apiResult = data;
+                self.apiError = '';
+            }).error(function() {
+                console.log('error!!!');
+            });
+        };
+
+        self.getUser();
+    });
+</script>
+</body>
+</html>
